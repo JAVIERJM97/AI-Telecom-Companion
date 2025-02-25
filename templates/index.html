@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>AI Telecom Companion</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <!-- Panel lateral oculto por defecto -->
+  <div id="infoSidebar" class="info-sidebar">
+    <div class="sidebar-header">
+      <button class="close-btn" onclick="closeInfoSidebar()">×</button>
+      <h2>How does it work?</h2>
+    </div>
+    <div class="sidebar-content">
+      <p>
+        Welcome to AI Telecom Companion, an easy-to-use helper for our telephone operators. The way it works is simple: you can record conversation audio and, when the customer says their name, the AI will instantly display all the client information. Our trained machine learning models immediately calculate the probability of customer churn; if that probability is high, the model predicts the best retention strategy based on the client's data. Additionally, telephone operators can ask questions about the company's plan information to respond to clients faster. This tool helps our staff provide better service and enhances customer satisfaction.
+      </p>
+    </div>
+  </div>
+
+  <!-- Pestaña "INFO" que abre el panel, alineada con el banner -->
+  <div class="info-tab" onclick="openInfoSidebar()">INFO</div>
+
+  <div class="banner-title">AI Telecom Companion</div>
+  
+  <!-- Sección superior con la información personal -->
+  <div class="banner-white">
+    <div class="inner-rectangle">
+      <div class="form-title">Client Personal Information</div>
+      <div class="input-container">
+        <div class="input-box">
+          <label>First Name</label>
+          <input type="text" id="first_name" readonly>
+        </div>
+        <div class="input-box">
+          <label>Last Name</label>
+          <input type="text" id="last_name" readonly>
+        </div>
+        <div class="input-box">
+          <label>Age</label>
+          <input type="number" id="age" readonly>
+        </div>
+        <div class="input-box">
+          <label>Residence</label>
+          <input type="text" id="residence" readonly>
+        </div>
+        <div class="input-box">
+          <label>Phone Number</label>
+          <input type="tel" id="phone_number" readonly>
+        </div>
+        <div class="input-box">
+          <label>Email</label>
+          <input type="email" id="email" readonly>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Contenedor principal (left-section, right-section) -->
+  <div class="content-container">
+    <!-- Sección izquierda con "Client Plan Information" -->
+    <div class="left-section">
+      <div class="section-rectangle">
+        <div class="form-title">Client Plan Information</div>
+        <div class="input-container">
+          <div class="input-box">
+            <label>Tariff Plan</label>
+            <input type="text" id="tariff_plan" readonly>
+          </div>
+          <div class="input-box">
+            <label>Contract Type</label>
+            <input type="text" id="contract_type" readonly>
+          </div>
+          <div class="input-box">
+            <label>Customer Type</label>
+            <input type="text" id="customer_type" readonly>
+          </div>
+          <div class="input-box">
+            <label>Income Level</label>
+            <input type="text" id="income_level" readonly>
+          </div>
+          <div class="input-box">
+            <label>Contract Satisfaction</label>
+            <input type="text" id="contract_satisfaction" readonly>
+          </div>
+          <div class="input-box">
+            <label>Monthly Price</label>
+            <input type="text" id="monthly_price" readonly>
+          </div>
+          <div class="input-box">
+            <label>Years in Company</label>
+            <input type="number" id="years_in_company" readonly>
+          </div>
+          <div class="input-box">
+            <label>Monthly Usage Hours</label>
+            <input type="number" id="monthly_usage_hours" readonly>
+          </div>
+          <div class="input-box">
+            <label>Num Family Lines</label>
+            <input type="number" id="num_family_lines" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección derecha con "AI Companion" -->
+    <div class="right-section">
+      <div class="section-rectangle">
+        <div class="form-title">AI Companion</div>
+        <div id="ai_response" class="ai-response">
+          <p>AI response will appear here...</p>
+        </div>
+        <!-- Container for debugging transcription -->
+        <div id="debug_transcription" class="debug-transcription"></div>
+        <div class="user-input-container">
+          <input type="text" id="user_input" placeholder="Enter customer name or ask a plan question">
+          <button id="enter_button">Enter</button>
+          <button id="record_button">Record</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script principal existente (reconocimiento de voz, etc.) -->
+  <script>
+    var missingMode = false;
+    var currentCustomerName = "";
+
+    var recognition;
+    if (!('webkitSpeechRecognition' in window)) {
+      alert("Sorry, your browser does not support speech recognition.");
+    } else {
+      recognition = new webkitSpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
+      recognition.onresult = function(event) {
+        var transcript = event.results[0][0].transcript;
+        console.log("Transcription: " + transcript);
+        $("#debug_transcription").text("Transcribed text: " + transcript);
+        if(missingMode) {
+          transcript = transcript.charAt(0).toUpperCase() + transcript.slice(1).toLowerCase();
+        }
+        $("#user_input").val(transcript);
+        handleTextInput(transcript);
+      };
+      recognition.onerror = function(event) {
+        console.error("Speech recognition error:", event.error);
+      };
+    }
+    
+    $(document).ready(function(){
+      $("#enter_button").click(function(){
+        var userInput = $("#user_input").val().trim();
+        handleTextInput(userInput);
+      });
+      
+      $("#record_button").click(function(){
+        if (!recognition) return;
+        if ($("#record_button").text() === "Record") {
+          $("#record_button").text("Stop");
+          recognition.start();
+        } else {
+          $("#record_button").text("Record");
+          recognition.stop();
+        }
+      });
+    });
+    
+    function handleTextInput(userInput) {
+      if(!userInput) {
+        alert("Please enter something (customer name or plan question).");
+        return;
+      }
+      
+      if(missingMode) {
+        let payload = {
+          first_name: currentCustomerName.split(" ")[0],
+          last_name: currentCustomerName.split(" ")[1],
+          customer_type: userInput
+        };
+        missingMode = false;
+        $("#user_input").attr("placeholder", "Enter customer name or ask a plan question").val("");
+        postGetCustomer(payload);
+        return;
+      }
+      
+      if(userInput.trim().endsWith("?")) {
+        postAskPlans(userInput);
+      } else {
+        let words = userInput.split(/\s+/);
+        if(words.length >= 2) {
+          let payload = {
+            first_name: words[0].charAt(0).toUpperCase() + words[0].slice(1).toLowerCase(),
+            last_name: words[1].charAt(0).toUpperCase() + words[1].slice(1).toLowerCase()
+          };
+          postGetCustomer(payload);
+        } else {
+          postAskPlans(userInput);
+        }
+      }
+    }
+    
+    function postGetCustomer(payload) {
+      $.ajax({
+        url: "/get_customer",
+        type: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(payload),
+        success: function(response) {
+          processGetCustomerResponse(response);
+        },
+        error: function(xhr, status, error) {
+          console.error("AJAX error (get_customer):", status, error);
+          $("#ai_response").html("<p><strong>Error:</strong> An error occurred while fetching customer data.</p>");
+        }
+      });
+    }
+    
+    function postAskPlans(question) {
+      $.ajax({
+        url: "/ask_plans",
+        type: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify({ question: question }),
+        success: function(response) {
+          processAskPlansResponse(response);
+        },
+        error: function(xhr, status, error) {
+          console.error("AJAX error (ask_plans):", status, error);
+          $("#ai_response").html("<p><strong>Error:</strong> An error occurred while fetching plan data.</p>");
+        }
+      });
+    }
+    
+    function processAskPlansResponse(response) {
+      console.log("ask_plans response:", response);
+      if(response.error) {
+        $("#ai_response").html("<p><strong>Error:</strong> " + response.error + "</p>");
+      } else {
+        $("#ai_response").html("<p><strong>AI Plan Answer:</strong> " + response.ai_plan_answer + "</p>");
+      }
+    }
+    
+    function processGetCustomerResponse(response) {
+      console.log("get_customer response:", response);
+      if(response.error) {
+        $("#ai_response").html("<p><strong>Error:</strong> " + response.error + "</p>");
+        return;
+      }
+      if(response.missing) {
+        missingMode = true;
+        currentCustomerName = response.first_name + " " + response.last_name;
+        $("#first_name").val(response.first_name);
+        $("#last_name").val(response.last_name);
+        $("#age").val(response.age);
+        $("#residence").val(response.residence);
+        $("#phone_number").val(response.phone_number);
+        $("#email").val(response.email);
+        $("#tariff_plan").val(response.tariff_plan);
+        $("#contract_type").val(response.contract_type);
+        $("#customer_type").val(response.customer_type).addClass("missing");
+        $("#income_level").val(response.income_level);
+        $("#contract_satisfaction").val(response.contract_satisfaction);
+        $("#monthly_price").val(response.monthly_price);
+        $("#years_in_company").val(response.years_in_company);
+        $("#monthly_usage_hours").val(response.monthly_usage_hours);
+        $("#num_family_lines").val(response.num_family_lines);
+        $("#ai_response").html("<p><strong>AI Analysis:</strong> " + response.ai_response + "</p><p style='color:red;'>Customer type is missing. Please provide it.</p>");
+        $("#user_input").attr("placeholder", "Enter customer type (e.g., Family)").val("");
+      } else {
+        $("#customer_type").removeClass("missing");
+        $("#first_name").val(response.first_name);
+        $("#last_name").val(response.last_name);
+        $("#age").val(response.age);
+        $("#residence").val(response.residence);
+        $("#phone_number").val(response.phone_number);
+        $("#email").val(response.email);
+        $("#tariff_plan").val(response.tariff_plan);
+        $("#contract_type").val(response.contract_type);
+        $("#customer_type").val(response.customer_type);
+        $("#income_level").val(response.income_level);
+        $("#contract_satisfaction").val(response.contract_satisfaction);
+        $("#monthly_price").val(response.monthly_price);
+        $("#years_in_company").val(response.years_in_company);
+        $("#monthly_usage_hours").val(response.monthly_usage_hours);
+        $("#num_family_lines").val(response.num_family_lines);
+        $("#ai_response").html(
+          "<p><strong>Churn Probability:</strong> " + response.churn + "</p>" +
+          "<p><strong>Retention Strategy:</strong> " + response.retention_strategy + "</p>" +
+          "<p><strong>AI Analysis:</strong> " + response.ai_response + "</p>"
+        );
+      }
+    }
+
+    // Funciones para abrir/cerrar el panel lateral
+    function openInfoSidebar() {
+      document.getElementById("infoSidebar").style.width = "260px";
+    }
+    function closeInfoSidebar() {
+      document.getElementById("infoSidebar").style.width = "0";
+    }
+  </script>
+</body>
+</html>
