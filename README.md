@@ -8,10 +8,15 @@ Cómo Configurar y Ejecutar el Proyecto
 Sigue estos pasos para configurar y ejecutar el proyecto en tu ordenador:
 
 1 - Descarga el proyecto en tu ordenador.
+
 2 - Mueve todos los archivos de la carpeta models al directorio principal del proyecto.
+
 3 - Crea un archivo llamado key.txt e introduce tu clave de acceso de OpenAI. Coloca este archivo en el directorio principal del proyecto.
+
 4 - Instala las bibliotecas necesarias ejecutando el siguiente comando: pip install -r requirements.txt
+
 5 - Ejecuta la aplicación con el siguiente comando en la terminal: python app.py
+
 
 -------
 
@@ -23,7 +28,11 @@ How to Set Up and Run the Project
 Follow these steps to set up and run the project on your computer:
 
 1 - Download the project to your computer.
+
 2 - Move all files from the models folder to the main project directory.
+
 3 - Create a file named key.txt and add your OpenAI API key inside. Place this file in the main project directory.
+
 4 - Install the required libraries by running: pip install -r requirements.txt
+
 5 - Run the application by executing the following command in the terminal: python app.py
