@@ -11,11 +11,13 @@ Sigue estos pasos para configurar y ejecutar el proyecto en tu ordenador:
 
 2 - Mueve todos los archivos de la carpeta models al directorio principal del proyecto.
 
-3 - Crea un archivo llamado key.txt e introduce tu clave de acceso de OpenAI. Coloca este archivo en el directorio principal del proyecto.
+3 - Introduce tu clave de API de OpenAI en el documento key.txt.
 
 4 - Instala las bibliotecas necesarias ejecutando el siguiente comando: pip install -r requirements.txt
 
 5 - Ejecuta la aplicación con el siguiente comando en la terminal: python app.py
+
+6 - Abre tu navegador, ingresa http://127.0.0.1:5000/ en la barra de búsqueda y disfruta del proyecto.
 
 
 -------
@@ -31,8 +33,10 @@ Follow these steps to set up and run the project on your computer:
 
 2 - Move all files from the models folder to the main project directory.
 
-3 - Create a file named key.txt and add your OpenAI API key inside. Place this file in the main project directory.
+3 - Enter your OpenAI API key in the key.txt file.
 
 4 - Install the required libraries by running: pip install -r requirements.txt
 
 5 - Run the application by executing the following command in the terminal: python app.py
+
+6 - Open your browser, enter http://127.0.0.1:5000/ in the address bar, and enjoy the project.
